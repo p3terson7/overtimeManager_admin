@@ -1,6 +1,6 @@
 # master_be.ps1
 
-$sharedFolder = "$HOME/Documents/ServerData/ServerData2/data"
+$sharedFolder = "$HOME\Documents\ServerData\ServerData2\data"
 $historyFile = Join-Path -Path $sharedFolder -ChildPath "history.json"
 
 # Ensure shared folder exists
@@ -13,7 +13,7 @@ if (!(Test-Path -Path $historyFile)) {
     @() | ConvertTo-Json -Depth 2 | Set-Content -Path $historyFile -Encoding UTF8
 }
 
-# Load employee names mapping from JSON
+# Ensure employeeNames mapping exists.
 $mappingFile = Join-Path -Path $sharedFolder -ChildPath "employeeNames.json"
 if (!(Test-Path -Path $mappingFile)) {
     $defaultMapping = @{
@@ -26,6 +26,16 @@ if (!(Test-Path -Path $mappingFile)) {
     $defaultMapping | ConvertTo-Json -Depth 3 | Set-Content -Path $mappingFile -Encoding UTF8
 }
 $employeeNames = Get-Content -Path $mappingFile -Raw | ConvertFrom-Json
+
+# Helper function to emulate the null-coalescing operator (??)
+function Get-EmployeeName($code) {
+    if ($employeeNames -and ($employeeNames.PSObject.Properties.Name -contains $code)) {
+        return $employeeNames.$code
+    }
+    else {
+        return $code
+    }
+}
 
 # Helper: Log a history entry by appending an object with an action string and timestamp to history.json.
 function logHistory($action, $message, $employeeName) {
@@ -84,7 +94,7 @@ function Format-TimeForHistory($timeString) {
 function respondWithError($response, $statusCode, $message) {
     $response.StatusCode = $statusCode
     $errorMsg = "{ `"error`": `"$message`" }"
-    $response.OutputStream.Write([System.Text.Encoding]::UTF8.GetBytes($errorMsg), 0, [System.Text.Encoding]::UTF8.GetBytes($errorMsg).Length)
+    $response.OutputStream.Write([System.Text.Encoding]::UTF8.GetBytes($errorMsg), 0, ([System.Text.Encoding]::UTF8.GetBytes($errorMsg)).Length)
     $response.Close()
 }
 
@@ -92,7 +102,7 @@ function respondWithError($response, $statusCode, $message) {
 function respondWithSuccess($response, $message) {
     $response.ContentType = "application/json"
     $response.StatusCode = 200
-    $response.OutputStream.Write([System.Text.Encoding]::UTF8.GetBytes($message), 0, [System.Text.Encoding]::UTF8.GetBytes($message).Length)
+    $response.OutputStream.Write([System.Text.Encoding]::UTF8.GetBytes($message), 0, ([System.Text.Encoding]::UTF8.GetBytes($message)).Length)
     $response.Close()
 }
 
@@ -138,7 +148,7 @@ while ($true) {
                 $code = $_.BaseName -replace "_data", ""
                 @{
                     code = $code
-                    name = $employeeNames.$code ?? $code
+                    name = Get-EmployeeName $code
                 }
             }
             respondWithSuccess $response ($employees | ConvertTo-Json -Depth 3)
@@ -166,8 +176,7 @@ while ($true) {
             continue
         }
 
-
-        # NEW: POST /employee/add/{employeeCode}: Add an entry for an employee.
+        # POST /employee/add/{employeeCode}: Add an entry for an employee.
         if ($request.HttpMethod -eq "POST" -and $request.Url.AbsolutePath -match "^/employee/add/(\d+)$") {
             $employeeCode = $matches[1]
             $dataFile = Join-Path -Path $sharedFolder -ChildPath "${employeeCode}_data.json"
@@ -207,7 +216,7 @@ while ($true) {
 
             # Create the new entry.
             $newEntry = @{
-                name     = $employeeNames.$employeeCode ?? $employeeCode
+                name     = Get-EmployeeName $employeeCode
                 date     = $payload.date
                 punchIn  = $punchInRounded
                 punchOut = $punchOutRounded
@@ -218,7 +227,7 @@ while ($true) {
             $existingData | ConvertTo-Json -Depth 3 | Set-Content -Path $dataFile -Encoding UTF8
 
             # Log history for adding.
-            $employeeName = $employeeNames.$employeeCode ?? $employeeCode
+            $employeeName = Get-EmployeeName $employeeCode
             $formattedDate = (Get-Date $payload.date).ToString("MMMM dd, yyyy")
             $historyMessage = "Added an entry on $formattedDate, starting at <strong>$(Format-TimeForHistory $punchInRounded)</strong> and finishing at <strong>$(Format-TimeForHistory $punchOutRounded)</strong>."
             logHistory "Add" $historyMessage $employeeName
@@ -230,7 +239,7 @@ while ($true) {
             $responseString = $responseMessage | ConvertTo-Json -Depth 3
             $response.ContentType = "application/json"
             $response.StatusCode = 200
-            $response.OutputStream.Write([System.Text.Encoding]::UTF8.GetBytes($responseString), 0, [System.Text.Encoding]::UTF8.GetBytes($responseString).Length)
+            $response.OutputStream.Write([System.Text.Encoding]::UTF8.GetBytes($responseString), 0, ([System.Text.Encoding]::UTF8.GetBytes($responseString)).Length)
             $response.Close()
             continue
         }
@@ -321,7 +330,7 @@ while ($true) {
                 Set-Content -Path $dataFile -Value $updatedJson -Encoding UTF8
 
                 # Build the history log message.
-                $employeeName = $employeeNames.$employeeCode ?? $employeeCode
+                $employeeName = Get-EmployeeName $employeeCode
                 # Format the modified entry date (e.g., "February 26, 2025").
                 $formattedDate = (Get-Date $payload.date).ToString("MMMM dd, yyyy")
                 if ($messages.Count -eq 0) {
@@ -383,9 +392,8 @@ while ($true) {
                 Set-Content -Path $dataFile -Value $jsonOut -Encoding UTF8
                 
                 # Log history for approval/disapproval.
-                $currentDate = (Get-Date).ToString("MMMM dd")
                 $formattedDate = (Get-Date $payload.date).ToString("MMMM dd, yyyy")
-                $employeeName = $employeeNames.$employeeCode ?? $employeeCode
+                $employeeName = Get-EmployeeName $employeeCode
                 $action = if ($payload.status -eq "approved") { "Approved" } else { "Rejected" }
 
                 $historyEntry = "$action an entry on $formattedDate starting at <strong>$(Format-TimeForHistory $payload.punchIn)</strong>."
@@ -393,7 +401,7 @@ while ($true) {
 
                 $response.ContentType = "application/json"
                 $response.StatusCode = 200
-                $response.OutputStream.Write([System.Text.Encoding]::UTF8.GetBytes($jsonOut), 0, [System.Text.Encoding]::UTF8.GetBytes($jsonOut).Length)
+                $response.OutputStream.Write([System.Text.Encoding]::UTF8.GetBytes($jsonOut), 0, ([System.Text.Encoding]::UTF8.GetBytes($jsonOut)).Length)
                 $response.Close()
             } catch {
                 respondWithError $response 500 "Error: '$($_.Exception.Message)'"
@@ -436,13 +444,10 @@ while ($true) {
                 Set-Content -Path $dataFile -Value ($filteredData | ConvertTo-Json -Depth 3) -Encoding UTF8
 
                 # Log history for deletion.
-                $currentDate = (Get-Date).ToString("MMMM dd")
                 $formattedDate = (Get-Date $delDate).ToString("MMMM dd, yyyy")
-                $employeeName = $employeeNames.$employeeCode ?? $employeeCode
+                $employeeName = Get-EmployeeName $employeeCode
 
                 if ($entryToDelete) {
-                    $punchInDisplay = Format-TimeForHistory $entryToDelete.punchIn
-                    $punchOutDisplay = if ($entryToDelete.punchOut) { " and finishing at " + (Format-TimeForHistory $entryToDelete.punchOut) } else { "" }
                     $historyEntry = "Deleted an entry on $formattedDate starting at <strong>$(Format-TimeForHistory $entryToDelete.punchIn)</strong>."
                     logHistory "Delete" $historyEntry $employeeName
                 }
