@@ -1,0 +1,116 @@
+[
+  {
+    "action": "Update",
+    "message": "Updated an entry on March 05, 2025, Punch In from <strong>11h51</strong> to <strong>12h51</strong>. Punch Out from <strong>13h51</strong> to <strong>14h51</strong>.",
+    "employee": "Peter-Nicholas Sarateanu",
+    "timestamp": "2025-03-05 14:58:04"
+  },
+  {
+    "action": "Add",
+    "message": "Added an entry on March 05, 2025, starting at <strong>12h13</strong> and finishing at <strong>14h15</strong>.",
+    "employee": "Peter-Nicholas Sarateanu",
+    "timestamp": "2025-03-05 14:58:09"
+  },
+  {
+    "action": "Approved",
+    "message": "Approved an entry on March 05, 2025 starting at <strong>12h13</strong>.",
+    "employee": "Peter-Nicholas Sarateanu",
+    "timestamp": "2025-03-05 14:59:33"
+  },
+  {
+    "action": "Approved",
+    "message": "Approved an entry on March 05, 2025 starting at <strong>12h13</strong>.",
+    "employee": "Peter-Nicholas Sarateanu",
+    "timestamp": "2025-03-05 14:59:33"
+  },
+  {
+    "action": "Approved",
+    "message": "Approved an entry on March 05, 2025 starting at <strong>12h13</strong>.",
+    "employee": "Peter-Nicholas Sarateanu",
+    "timestamp": "2025-03-05 14:59:33"
+  },
+  {
+    "action": "Approved",
+    "message": "Approved an entry on March 05, 2025 starting at <strong>12h13</strong>.",
+    "employee": "Peter-Nicholas Sarateanu",
+    "timestamp": "2025-03-05 14:59:33"
+  },
+  {
+    "action": "Approved",
+    "message": "Approved an entry on March 05, 2025 starting at <strong>12h13</strong>.",
+    "employee": "Peter-Nicholas Sarateanu",
+    "timestamp": "2025-03-05 14:59:33"
+  },
+  {
+    "action": "Approved",
+    "message": "Approved an entry on March 02, 2025 starting at <strong>11h12</strong>.",
+    "employee": "Peter-Nicholas Sarateanu",
+    "timestamp": "2025-03-05 15:01:41"
+  },
+  {
+    "action": "Rejected",
+    "message": "Rejected an entry on March 05, 2025 starting at <strong>13h41</strong>.",
+    "employee": "Peter-Nicholas Sarateanu",
+    "timestamp": "2025-03-11 09:13:16"
+  },
+  {
+    "action": "Approved",
+    "message": "Approved an entry on March 05, 2025 starting at <strong>12h12</strong>.",
+    "employee": "Peter-Nicholas Sarateanu",
+    "timestamp": "2025-03-11 11:35:47"
+  },
+  {
+    "action": "Approved",
+    "message": "Approved an entry on March 05, 2025 starting at <strong>12h12</strong>.",
+    "employee": "Peter-Nicholas Sarateanu",
+    "timestamp": "2025-03-11 11:35:47"
+  },
+  {
+    "action": "Approved",
+    "message": "Approved an entry on March 05, 2025 starting at <strong>12h12</strong>.",
+    "employee": "Peter-Nicholas Sarateanu",
+    "timestamp": "2025-03-11 11:35:47"
+  },
+  {
+    "action": "Approved",
+    "message": "Approved an entry on March 05, 2025 starting at <strong>14h15</strong>.",
+    "employee": "Peter-Nicholas Sarateanu",
+    "timestamp": "2025-03-11 11:35:49"
+  },
+  {
+    "action": "Approved",
+    "message": "Approved an entry on March 05, 2025 starting at <strong>12h13</strong>.",
+    "employee": "Peter-Nicholas Sarateanu",
+    "timestamp": "2025-03-11 11:35:50"
+  },
+  {
+    "action": "Approved",
+    "message": "Approved an entry on March 05, 2025 starting at <strong>12h13</strong>.",
+    "employee": "Peter-Nicholas Sarateanu",
+    "timestamp": "2025-03-11 11:35:50"
+  },
+  {
+    "action": "Approved",
+    "message": "Approved an entry on March 05, 2025 starting at <strong>12h13</strong>.",
+    "employee": "Peter-Nicholas Sarateanu",
+    "timestamp": "2025-03-11 11:35:51"
+  },
+  {
+    "action": "Approved",
+    "message": "Approved an entry on March 05, 2025 starting at <strong>12h13</strong>.",
+    "employee": "Peter-Nicholas Sarateanu",
+    "timestamp": "2025-03-11 11:35:57"
+  },
+  {
+    "action": "Rejected",
+    "message": "Rejected an entry on March 05, 2025 starting at <strong>12h13</strong>.",
+    "employee": "Peter-Nicholas Sarateanu",
+    "timestamp": "2025-03-11 11:35:58"
+  },
+  {
+    "action": "Rejected",
+    "message": "Rejected an entry on March 05, 2025 starting at <strong>12h13</strong>.",
+    "employee": "Peter-Nicholas Sarateanu",
+    "timestamp": "2025-03-11 11:35:59"
+  }
+]

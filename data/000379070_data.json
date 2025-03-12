@@ -1,0 +1,82 @@
+[
+  {
+    "date": "2025-02-26",
+    "punchIn": "11:31:00",
+    "status": "approved",
+    "name": "000379070",
+    "punchOut": "15:38:00",
+    "overtime": "04:07:00"
+  },
+  {
+    "date": "2025-03-05",
+    "punchIn": "12:51:00",
+    "status": "approved",
+    "punchOut": "14:51:00",
+    "overtime": "02:00:00",
+    "name": "000379070"
+  },
+  {
+    "date": "2025-03-05",
+    "punchIn": "13:41:00",
+    "status": "rejected",
+    "punchOut": "13:41:00",
+    "overtime": "00:00:00",
+    "name": "000379070"
+  },
+  {
+    "date": "2025-03-12",
+    "punchOut": "12:13:00",
+    "status": "approved",
+    "name": "Peter-Nicholas Sarateanu",
+    "punchIn": "11:12:00",
+    "overtime": "01:01:00"
+  },
+  {
+    "date": "2025-03-02",
+    "punchOut": "12:12:00",
+    "status": "approved",
+    "name": "Peter-Nicholas Sarateanu",
+    "punchIn": "11:12:00",
+    "overtime": "01:00:00"
+  },
+  {
+    "date": "2025-03-05",
+    "punchOut": "12:14:00",
+    "status": "approved",
+    "name": "Peter-Nicholas Sarateanu",
+    "punchIn": "12:12:00",
+    "overtime": "00:02:00"
+  },
+  {
+    "date": "2025-03-05",
+    "punchOut": "14:15:00",
+    "status": "rejected",
+    "name": "Peter-Nicholas Sarateanu",
+    "punchIn": "12:13:00",
+    "overtime": "02:02:00"
+  },
+  {
+    "overtime": "02:02:00",
+    "status": "approved",
+    "punchOut": "16:17:00",
+    "punchIn": "14:15:00",
+    "name": "Peter-Nicholas Sarateanu",
+    "date": "2025-03-05"
+  },
+  {
+    "overtime": "02:02:00",
+    "status": "pending",
+    "punchOut": "14:15:00",
+    "punchIn": "12:13:00",
+    "name": "Peter-Nicholas Sarateanu",
+    "date": "2025-03-05"
+  },
+  {
+    "status": "pending",
+    "date": "2025-03-05",
+    "overtime": "02:02:00",
+    "punchIn": "12:13:00",
+    "name": "Peter-Nicholas Sarateanu",
+    "punchOut": "14:15:00"
+  }
+]
