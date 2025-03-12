@@ -1,5 +1,5 @@
 ::-webkit-scrollbar { display: none; width: 0%; }
-body { background-color: #eef1f5; color: #333; margin: 0; padding: 0; }
+body { background-color: #eef1f5; color: #333; margin: 0; padding: 0; font-family: "Open Sans", sans-serif; }
 .navbar { background-color: #003366; margin-bottom: 20px; display: flex; }
 .navbar-brand, .navbar-nav .nav-link { font-weight: 550; color: #ffffff !important; }
 .navbar-nav .nav-link:hover, .navbar-nav .nav-link.active { color: #C8102E !important; }
