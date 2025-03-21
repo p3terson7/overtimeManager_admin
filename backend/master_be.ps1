@@ -214,7 +214,7 @@ while ($true) {
                 $existingData = @($existingData)
             }
 
-            # Create the new entry.
+            # Create the new entry with an empty message.
             $newEntry = @{
                 name     = Get-EmployeeName $employeeCode
                 date     = $payload.date
@@ -222,6 +222,7 @@ while ($true) {
                 punchOut = $punchOutRounded
                 overtime = ($punchOutTime - $punchInTime).ToString("hh\:mm\:ss")
                 status   = "pending"
+                message  = ""
             }
             $existingData += $newEntry
             $existingData | ConvertTo-Json -Depth 3 | Set-Content -Path $dataFile -Encoding UTF8
@@ -331,7 +332,6 @@ while ($true) {
 
                 # Build the history log message.
                 $employeeName = Get-EmployeeName $employeeCode
-                # Format the modified entry date (e.g., "February 26, 2025").
                 $formattedDate = (Get-Date $payload.date).ToString("MMMM dd, yyyy")
                 if ($messages.Count -eq 0) {
                     $finalMessage = "Entry on $formattedDate updated successfully."
@@ -339,7 +339,6 @@ while ($true) {
                 else {
                     $finalMessage = "Updated an entry on $formattedDate, " + ($messages -join " ")
                 }
-                # Log history with the action type "Update".
                 logHistory "Update" $finalMessage $employeeName
 
                 respondWithSuccess $response ('{ "message": "' + ($messages -join "<br>") + '" }')
@@ -387,11 +386,9 @@ while ($true) {
                     respondWithError $response 404 "Error: Overtime entry not found"
                     continue
                 }
-                # Convert updated data to JSON and save it back to the file.
                 $jsonOut = $existingData | ConvertTo-Json -Depth 3
                 Set-Content -Path $dataFile -Value $jsonOut -Encoding UTF8
                 
-                # Log history for approval/disapproval.
                 $formattedDate = (Get-Date $payload.date).ToString("MMMM dd, yyyy")
                 $employeeName = Get-EmployeeName $employeeCode
                 $action = if ($payload.status -eq "approved") { "Approved" } else { "Rejected" }
@@ -406,6 +403,48 @@ while ($true) {
             } catch {
                 respondWithError $response 500 "Error: '$($_.Exception.Message)'"
             }
+            continue
+        }
+
+        # NEW: PUT /employee/message/{employeeCode}: Update the message field of an overtime entry.
+        if ($request.HttpMethod -eq "PUT" -and $request.Url.AbsolutePath -match "^/employee/message/(\d+)$") {
+            $employeeCode = $matches[1]
+            $dataFile = Join-Path -Path $sharedFolder -ChildPath "${employeeCode}_data.json"
+
+            if (!(Test-Path -Path $dataFile)) {
+                respondWithError $response 404 "Employee not found"
+                continue
+            }
+
+            $reader = New-Object IO.StreamReader($request.InputStream)
+            $payload = $reader.ReadToEnd() | ConvertFrom-Json
+            $reader.Close()
+
+            # Require payload to include date, punchIn, and message.
+            if (-not ($payload.date -and $payload.punchIn -and ($payload.PSObject.Properties.Name -contains "message"))) {
+                respondWithError $response 400 "Missing required fields: date, punchIn, and message are required."
+                continue
+            }
+
+            $existingData = Get-Content -Path $dataFile -Raw | ConvertFrom-Json
+            if (-not ($existingData -is [System.Collections.IEnumerable])) {
+                $existingData = @($existingData)
+            }
+
+            $found = $false
+            for ($i = 0; $i -lt $existingData.Count; $i++) {
+                if ($existingData[$i].date -eq $payload.date -and $existingData[$i].punchIn -eq $payload.punchIn) {
+                    $existingData[$i].message = $payload.message
+                    $found = $true
+                    break
+                }
+            }
+            if (-not $found) {
+                respondWithError $response 404 "Entry not found"
+                continue
+            }
+            $existingData | ConvertTo-Json -Depth 3 | Set-Content -Path $dataFile -Encoding UTF8
+            respondWithSuccess $response '{ "message": "Message updated successfully." }'
             continue
         }
 
@@ -433,7 +472,6 @@ while ($true) {
                 if (-not ($existingData -is [System.Collections.IEnumerable])) { 
                     $existingData = @($existingData) 
                 }
-                # Find the entry to delete for logging.
                 $entryToDelete = $existingData | Where-Object { $_.date -eq $delDate -and $_.punchIn -eq $delPunchIn } | Select-Object -First 1
 
                 $filteredData = $existingData | Where-Object { $_.date -ne $delDate -or $_.punchIn -ne $delPunchIn }
@@ -443,14 +481,16 @@ while ($true) {
                 }
                 Set-Content -Path $dataFile -Value ($filteredData | ConvertTo-Json -Depth 3) -Encoding UTF8
 
-                # Log history for deletion.
                 $formattedDate = (Get-Date $delDate).ToString("MMMM dd, yyyy")
                 $employeeName = Get-EmployeeName $employeeCode
 
-                if ($entryToDelete) {
-                    $historyEntry = "Deleted an entry on $formattedDate starting at <strong>$(Format-TimeForHistory $entryToDelete.punchIn)</strong>."
-                    logHistory "Delete" $historyEntry $employeeName
+                $historyEntry = "Deleted an entry on $formattedDate starting at <strong>$(Format-TimeForHistory $entryToDelete.punchIn)</strong>."
+                # Append deletion message if provided as a query parameter.
+                $delMessage = $query["message"]
+                if ($delMessage) {
+                    $historyEntry += " Reason: $delMessage"
                 }
+                logHistory "Delete" $historyEntry $employeeName
                 respondWithSuccess $response '{ "message": "Entry deleted successfully." }'
             } finally {
                 $mutex.ReleaseMutex()
